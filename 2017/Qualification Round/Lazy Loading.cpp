@@ -19,13 +19,6 @@ using namespace std;
 static int dx[] = {-1,-1,-1,0,0,1,1,1};
 static int dy[] = {-1,0,1,-1,1,-1,0,1};
 
-typedef struct {
-	int a:4;
-	int b:2;
-	int c:2;
-	int d:6;
-} myStruct;
-
 int main()
 {
 	#ifndef online_judge
@@ -46,25 +39,19 @@ int main()
 		}
 		sort(nums.begin(), nums.end());
 		
-		// for(int I=0;I<nums.size();I++){
-			// cout<<setw(3)<<nums[I]<<" ";
-			// if((I+1)%10==0)
-				// cout<<endl;
-		// }
-		// cout<<endl;
 		
 		int ans = 0;
 		if(nums.size()==1){
 			ans = 1;
 		}else{
-			int i, j, k;
-			for(i=0,j=nums.size()-1;i<j;){
-				k=1;
-				while(nums[j]*k<50)
-					k++;
-				ans+=1;
-				j--;
-				i+=(k-1);
+			for(int L=0,R=nums.size()-1;L<=R;){
+				int needs = 0;
+				while(nums[R]*(needs+1)<50)
+					needs++;
+				if(L+needs<=R)
+					ans++;
+				L+=needs;
+				R--;
 			}
 		}
 		

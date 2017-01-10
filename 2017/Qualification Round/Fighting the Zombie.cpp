@@ -19,37 +19,37 @@ using namespace std;
 static int dx[] = {-1,-1,-1,0,0,1,1,1};
 static int dy[] = {-1,0,1,-1,1,-1,0,1};
 
-double C(int m, int n){
-	if(n<=0)
-		return 1;
+int solution[21] = {0};
+void backtrack(int n, int X, int Y, int h, int &sum){
+	if(n==X){
+		return;
+	}
 	
-	double rv = 1;
-	for(int i=m;i>(m-n);i--)
-		rv*=i;
-	for(int i=n;i>1;i--)
-		rv/=i;
-	return rv;
+	for(int i=1;i<=Y;i++){
+		solution[n] = i;
+		if(n>0)
+			solution[n]+=solution[n-1];
+		if(solution[n]>=h){
+			// for(int j=0;j<=n;j++)
+				// cout<<solution[j]<<" ";
+			int restNum = pow((double)Y, (double)(X-n-1));
+			// cout<<" -> "<<restNum<<endl;
+			sum+=restNum;
+		}else
+			backtrack(n+1, X, Y, h, sum);
+	}
 }
 
-double H(int n, int r){
-	double rv = C(n+r-1, r);
-	// cout<<"H("<<n<<","<<r<<") = "<<rv<<endl;
-	return C(n+r-1, r);
-}
-
-double cal(string s, int h){
-	size_t pos = s.find('+', 0);
-	if(pos!=string::npos)
-		h-=atoi(s.substr(pos+1).c_str());
-	pos = s.find('-', 0);
-	if(pos!=string::npos)
-		h+=atoi(s.substr(pos+1).c_str());
-	
+double cal(string s, int h){	
 	stringstream ss(s);
-	int X, Y;
+	int X, Y, Z = 0;
 	char ch;
-	ss>>X>>ch>>Y;
 	
+	ss>>X>>ch>>Y;
+	if(s.find('+', 0)!=string::npos || s.find('-', 0)!=string::npos)
+		ss>>Z;
+	h-=Z;
+
 	if(X*Y<h)
 		return 0;
 	else if(X>=h)
@@ -62,28 +62,11 @@ double cal(string s, int h){
 				count++;
 		return (double)count/Y;
 	}else{
-		h-=X;
-		double sum = H(X+1, h-1);
-		for(int i=0;i<h;i++){
-			int temp = i/Y;
-			int idx = 1;
-			while(temp>0){
-				if(idx%2)
-					sum-=C(X, idx)*H(X, i-idx*Y);
-				else
-					sum+=C(X, idx)*H(X, i-idx*Y);
-				temp--;
-				idx++;
-			}
-			// if(i/Y==1)
-				// sum-=C(X, 1)*H(X, i-Y);
-			// if(i/Y==2)
-				// sum+=C(X, 2)*H(X, i-2*Y);
-			// if(i/Y==3)
-				// sum-=C(X, 3)*H(X, i-3*Y);
-		}
-
-		return 1-sum/pow((double)Y, (double)X);
+		// cout<<X<<" "<<Y<<" "<<h<<endl;
+		int sum = 0;
+		backtrack(0, X, Y, h, sum);
+		return sum/pow((double)Y, (double)X);
+		// backtrack(0, X, Y, h);
 	}
 	
 	return 0;
